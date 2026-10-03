@@ -14,6 +14,10 @@ import { generateDxfCrossSection, generateOpenIfc4Model } from '../../services/c
 import { gitHubSyncEngine, RemoteKnowledgeNode, SyncResultReport } from '../../services/githubSync';
 import { listTasks, createGoogleTask, completeGoogleTask, GoogleTaskItem } from '../../services/tasksService';
 import { ColabDriveIngestionModule } from './ColabDriveIngestionModule';
+import { EurocodeHubModule } from './EurocodeHubModule';
+import { AiCodebaseModule } from './AiCodebaseModule';
+import { LlmCookbookModule } from './LlmCookbookModule';
+import { TragsystemeEngineModule } from './TragsystemeEngineModule';
 import { mcpBridge } from '../../services/mcpBridge';
 import { 
   Share2, 
@@ -36,7 +40,9 @@ import {
   Cpu, 
   BookOpen, 
   Terminal, 
-  AlertTriangle 
+  AlertTriangle,
+  FolderTree,
+  Calculator
 } from 'lucide-react';
 
 export interface GitHubConnectorProps {
@@ -341,7 +347,9 @@ export const ConnectorsWorkspace: React.FC<ConnectorsWorkspaceProps> = ({
   onAuthenticateGoogle,
   onKnowledgeUpdated
 }) => {
-  const [activeTab, setActiveTab] = useState<'GITHUB_CONNECTOR' | 'COLAB_INGESTION' | 'CAD_BIM' | 'GOOGLE_TASKS' | 'NAD_AT'>('GITHUB_CONNECTOR');
+  const [activeTab, setActiveTab] = useState<
+    'GITHUB_CONNECTOR' | 'COLAB_INGESTION' | 'EUROCODE_HUB' | 'AI_CODEBASE' | 'LLM_COOKBOOK' | 'TRAGSYSTEME_ENGINE' | 'CAD_BIM' | 'GOOGLE_TASKS' | 'NAD_AT'
+  >('GITHUB_CONNECTOR');
 
   // Google Tasks State
   const [tasks, setTasks] = useState<GoogleTaskItem[]>([
@@ -502,13 +510,53 @@ export const ConnectorsWorkspace: React.FC<ConnectorsWorkspaceProps> = ({
         </button>
 
         <button
+          onClick={() => setActiveTab('EUROCODE_HUB')}
+          className={`pb-2 px-2.5 border-b-2 transition flex items-center gap-1.5 ${
+            activeTab === 'EUROCODE_HUB' ? 'border-emerald-500 text-emerald-400 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Cpu className="w-3.5 h-3.5 text-emerald-400" />
+          EUROCODE-HUB (PYTHON PARSER)
+        </button>
+
+        <button
+          onClick={() => setActiveTab('AI_CODEBASE')}
+          className={`pb-2 px-2.5 border-b-2 transition flex items-center gap-1.5 ${
+            activeTab === 'AI_CODEBASE' ? 'border-sky-500 text-sky-400 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <FolderTree className="w-3.5 h-3.5 text-sky-400" />
+          AI-CODEBASE (CAD/THREEJS)
+        </button>
+
+        <button
+          onClick={() => setActiveTab('LLM_COOKBOOK')}
+          className={`pb-2 px-2.5 border-b-2 transition flex items-center gap-1.5 ${
+            activeTab === 'LLM_COOKBOOK' ? 'border-pink-500 text-pink-400 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <BookOpen className="w-3.5 h-3.5 text-pink-400" />
+          FRONTIER LLM COOKBOOK
+        </button>
+
+        <button
+          onClick={() => setActiveTab('TRAGSYSTEME_ENGINE')}
+          className={`pb-2 px-2.5 border-b-2 transition flex items-center gap-1.5 ${
+            activeTab === 'TRAGSYSTEME_ENGINE' ? 'border-sky-500 text-sky-400 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Calculator className="w-3.5 h-3.5 text-sky-400" />
+          TRAGSYSTEME &amp; GOLDEN TEST
+        </button>
+
+        <button
           onClick={() => setActiveTab('CAD_BIM')}
           className={`pb-2 px-2.5 border-b-2 transition flex items-center gap-1.5 ${
             activeTab === 'CAD_BIM' ? 'border-sky-500 text-sky-400 font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
           <Building2 className="w-3.5 h-3.5" />
-          CAD & BIM EXPORT (DXF / IFC4)
+          CAD &amp; BIM EXPORT
         </button>
 
         <button
@@ -518,7 +566,7 @@ export const ConnectorsWorkspace: React.FC<ConnectorsWorkspaceProps> = ({
           }`}
         >
           <CheckSquare className="w-3.5 h-3.5" />
-          GOOGLE TASKS REVIEW
+          GOOGLE TASKS
         </button>
 
         <button
@@ -528,7 +576,7 @@ export const ConnectorsWorkspace: React.FC<ConnectorsWorkspaceProps> = ({
           }`}
         >
           <Flag className="w-3.5 h-3.5 text-rose-400" />
-          NAD-AT (AUSTRIA RULES)
+          NAD-AT
         </button>
       </div>
 
@@ -544,6 +592,21 @@ export const ConnectorsWorkspace: React.FC<ConnectorsWorkspaceProps> = ({
           onAuthenticateGoogle={onAuthenticateGoogle}
           onKnowledgeUpdated={onKnowledgeUpdated}
         />
+      )}
+
+      {/* TAB 3: EUROCODE-HUB (AI-PYTHON-PARSER) */}
+      {activeTab === 'EUROCODE_HUB' && (
+        <EurocodeHubModule onKnowledgeUpdated={onKnowledgeUpdated} />
+      )}
+
+      {/* TAB 4: AI-CODEBASE */}
+      {activeTab === 'AI_CODEBASE' && (
+        <AiCodebaseModule />
+      )}
+
+      {/* TAB 5: FRONTIER LLM COOKBOOK */}
+      {activeTab === 'LLM_COOKBOOK' && (
+        <LlmCookbookModule />
       )}
 
       {/* TAB 3: CAD & OPENIFC EXPORT */}

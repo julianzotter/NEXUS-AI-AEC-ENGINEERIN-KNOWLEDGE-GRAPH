@@ -17,7 +17,8 @@ import {
   BookOpen, 
   Share2,
   HardDrive,
-  Box
+  Box,
+  Sliders
 } from 'lucide-react';
 
 export type ActivePerspective = 
@@ -31,6 +32,8 @@ export type ActivePerspective =
   | 'KERNEL_HBV' 
   | 'KERNEL_EC5' 
   | 'KERNEL_EC2'
+  | 'STRESS_DEFLECTION'
+  | 'STATIKER_COOKBOOK'
   | 'KNOWLEDGE_SSOT'
   | 'MCP_BRIDGE'
   | 'ORBIT_3D'
@@ -62,6 +65,8 @@ export const RolePerspectiveSidebar: React.FC<RolePerspectiveSidebarProps> = ({
   ];
 
   const kernelItems = [
+    { id: 'STRESS_DEFLECTION' as ActivePerspective, label: 'Spannung & Biegelinie (Pyodide)', icon: Sliders, color: 'text-emerald-300' },
+    { id: 'STATIKER_COOKBOOK' as ActivePerspective, label: 'Statiker-Cookbook & ETAs', icon: BookOpen, color: 'text-amber-300' },
     { id: 'KERNEL_HBV' as ActivePerspective, label: 'CEN/TS 19103 HBV (Golden)', icon: Calculator, color: 'text-emerald-400' },
     { id: 'KERNEL_EC5' as ActivePerspective, label: 'EC5 Holzbalken', icon: Calculator, color: 'text-slate-300' },
     { id: 'KERNEL_EC2' as ActivePerspective, label: 'EC2 Stahlbetonplatte', icon: Calculator, color: 'text-purple-400' },

@@ -9,6 +9,9 @@ import React, { useState, useEffect } from 'react';
 import { 
   colabIngestionEngine, 
   COLAB_NOTEBOOK_URL, 
+  COLAB_RELNOTES_URL,
+  COLAB_KERNEL_FABRIC_URL,
+  COLAB_INDEX_MYDRIVE_URL,
   PRESET_COLAB_PROJECTS, 
   PRESET_DISCOVERED_PARSERS, 
   ColabProject, 
@@ -170,24 +173,54 @@ export const ColabDriveIngestionModule: React.FC<ColabDriveIngestionModuleProps>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             <a
               href={COLAB_NOTEBOOK_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold flex items-center gap-1.5 transition text-xs shadow-md shadow-amber-600/20"
+              className="px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold flex items-center gap-1 text-[11px] transition shadow-md shadow-amber-600/20"
             >
-              <ExternalLink className="w-3.5 h-3.5" />
-              OPEN COLAB NOTEBOOK
+              <ExternalLink className="w-3 h-3" />
+              KB-001 (KlimAIthos)
+            </a>
+
+            <a
+              href={COLAB_INDEX_MYDRIVE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1 text-[11px] transition"
+            >
+              <ExternalLink className="w-3 h-3 text-sky-400" />
+              INDEX-MYDrive (_71sAbDNq96h)
+            </a>
+
+            <a
+              href={COLAB_KERNEL_FABRIC_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1 text-[11px] transition"
+            >
+              <ExternalLink className="w-3 h-3 text-emerald-400" />
+              KERNEL FABRIC (66e756c2)
+            </a>
+
+            <a
+              href={COLAB_RELNOTES_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1 text-[11px] transition"
+            >
+              <ExternalLink className="w-3 h-3 text-purple-400" />
+              RELNOTES (Z-7TDZMDrPa4)
             </a>
 
             <button
               onClick={handleScanDrive}
               disabled={isScanning}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 transition text-xs"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1 transition text-[11px]"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
-              SCAN DRIVE ROOT
+              <RefreshCw className={`w-3 h-3 ${isScanning ? 'animate-spin' : ''}`} />
+              SCAN DRIVE
             </button>
           </div>
         </div>

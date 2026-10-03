@@ -43,8 +43,35 @@ export interface DiscoveredParserItem {
 }
 
 export const COLAB_NOTEBOOK_URL = 'https://colab.research.google.com/drive/1l3tCB3UTLFthvq6Jui7vOkdPCvz0kGP_#scrollTo=7DhjHRQGKdhx';
+export const COLAB_RELNOTES_URL = 'https://colab.research.google.com/notebooks/relnotes.ipynb#scrollTo=Z-7TDZMDrPa4';
+export const COLAB_KERNEL_FABRIC_URL = 'https://colab.research.google.com/drive/1EbnA98YHXvcQ_k7wQFIWnzlzkPFdzYUY#scrollTo=66e756c2';
+export const COLAB_INDEX_MYDRIVE_URL = 'https://colab.research.google.com/drive/1l3tCB3UTLFthvq6Jui7vOkdPCvz0kGP_#scrollTo=_71sAbDNq96h';
 
 export const PRESET_COLAB_PROJECTS: ColabProject[] = [
+  {
+    id: 'NEXUS-MASTER-SETUP',
+    name: 'NEXUS-4 Master Setup // Kernel Fabric',
+    category: 'HBV_TCC',
+    folderPath: 'Colab/Z-7TDZMDrPa4/master_setup',
+    colabCellId: 'Z-7TDZMDrPa4',
+    ingestScript: 'setup_nexus4_kernel_fabric.py',
+    status: 'DEP_RESOLVED',
+    dependencies: ['pypdf>=4.0', 'numpy', 'scipy', 'sympy', 'fastapi'],
+    description: 'Initialisiert die Ordnerstrukturen, HBV-Rechenkerne, Run Envelope Generator und test_golden_slice.py.',
+    parserCount: 8
+  },
+  {
+    id: 'INDEX-MYDRIVE-FTS5',
+    name: 'INDEX-MYDrive.ipynb // FTS5 Indexer',
+    category: 'AI_CODEBASE',
+    folderPath: 'Drive/AI-PYTHON-PARSER/KB-001-HBV-GPT',
+    colabCellId: '_71sAbDNq96h',
+    ingestScript: 'NEXUS_PARSER_PIPELINE_v1_4.py',
+    status: 'READY',
+    dependencies: ['pypdf>=4.0', 'sqlite3'],
+    description: 'ETL-Pipeline für KB-001-HBV-GPT, KB-003-HOLZ-GPT mit SQLite-Vollregister und globalem FTS5-Index.',
+    parserCount: 9
+  },
   {
     id: 'KB-001-HBV-GPT',
     name: 'KlimAIthos // KB-001-HBV-GPT',

@@ -34,6 +34,8 @@ import { SearchModal } from './components/modals/SearchModal';
 import { DeltaModal } from './components/modals/DeltaModal';
 import { Structural3DVisualizer } from './components/visualization/Structural3DVisualizer';
 import { ConnectorsWorkspace } from './components/connectors/ConnectorsWorkspace';
+import { InteractiveStressDeflectionViewer } from './components/engineering/InteractiveStressDeflectionViewer';
+import { StatikerCookbookView } from './components/knowledge/StatikerCookbookView';
 
 export default function App() {
   // Navigation & Perspective
@@ -366,16 +368,29 @@ export default function App() {
 
           {/* Golden Slice: CEN/TS 19103 HBV Calculator */}
           {(currentPerspective === 'KERNEL_HBV' || currentPerspective === 'ORBIT_3D') && (
-            <HbvCalculatorSlice
-              initialParameters={GOLDEN_HBV_PARAMETERS}
-              onExecuteGoldenRun={executeGoldenRun}
-              onExportEvidenceBundle={() => {
-                if (currentRun?.verifiedResult) {
-                  setDeltaReport(performDeltaVerification(currentRun.verifiedResult, currentRun.verifiedResult));
-                  setIsDeltaModalOpen(true);
-                }
-              }}
-            />
+            <div className="space-y-4">
+              <InteractiveStressDeflectionViewer />
+              <HbvCalculatorSlice
+                initialParameters={GOLDEN_HBV_PARAMETERS}
+                onExecuteGoldenRun={executeGoldenRun}
+                onExportEvidenceBundle={() => {
+                  if (currentRun?.verifiedResult) {
+                    setDeltaReport(performDeltaVerification(currentRun.verifiedResult, currentRun.verifiedResult));
+                    setIsDeltaModalOpen(true);
+                  }
+                }}
+              />
+            </div>
+          )}
+
+          {/* View Mode: Interactive Stress & Deflection Visualizer (Pyodide CPython WASM) */}
+          {currentPerspective === 'STRESS_DEFLECTION' && (
+            <InteractiveStressDeflectionViewer />
+          )}
+
+          {/* View Mode: Statiker-Cookbook & Technical Approvals (ETA) Catalog */}
+          {currentPerspective === 'STATIKER_COOKBOOK' && (
+            <StatikerCookbookView />
           )}
 
           {/* View Mode: EC5 Timber Girder Calculator */}

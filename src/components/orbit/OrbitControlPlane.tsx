@@ -9,6 +9,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitNode } from '../../types/nexus';
 
+export type OrbitClusterPath = 'ALL' | 'SIO_STRUCTURAL' | 'ASO_SYSTEMS' | 'GOV_DAA' | 'OPEN_ECOSYSTEM';
+
 interface OrbitControlPlaneProps {
   nodes: OrbitNode[];
   selectedNodeId: string | null;
@@ -28,6 +30,7 @@ export const OrbitControlPlane: React.FC<OrbitControlPlaneProps> = ({
   const [hoveredNode, setHoveredNode] = useState<OrbitNode | null>(null);
   const [autoRotate, setAutoRotate] = useState(true);
   const [cameraDistance, setCameraDistance] = useState(28);
+  const [activePath, setActivePath] = useState<OrbitClusterPath>('ALL');
 
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -230,18 +233,32 @@ export const OrbitControlPlane: React.FC<OrbitControlPlaneProps> = ({
         updateCameraPosition();
       }
 
-      // Pulse particles movement along gate chain (DAA -> ASO -> AEGS -> SIO)
+      // Pulse particles movement along active cluster path
       if (pulseParticlesRef.current) {
         const posAttr = pulseParticlesRef.current.geometry.attributes.position as THREE.BufferAttribute;
-        const gateChainNodes = ['node-daa', 'node-aso', 'node-aegs', 'node-sio'];
+        
+        // Define path node sequence
+        let pathSequence = ['node-daa', 'node-aso', 'node-aegs', 'node-sio', 'node-kernel-hbv'];
+        if (activePath === 'SIO_STRUCTURAL') {
+          pathSequence = ['node-sio', 'node-kernel-hbv', 'node-kernel-ec5', 'node-kernel-ec2', 'node-ssot'];
+        } else if (activePath === 'ASO_SYSTEMS') {
+          pathSequence = ['node-aso', 'node-agent-data', 'node-agent-tickr', 'node-agent-radio'];
+        } else if (activePath === 'GOV_DAA') {
+          pathSequence = ['node-daa', 'node-aegs', 'node-mcp-bridge'];
+        } else if (activePath === 'OPEN_ECOSYSTEM') {
+          pathSequence = ['node-ssot', 'node-mcp-bridge', 'node-kernel-hbv'];
+        }
+
+        const segCount = Math.max(1, pathSequence.length - 1);
+        const speed = isRunning ? 2.8 : 0.9;
         
         for (let i = 0; i < pulseCount; i++) {
-          const t = (elapsed * 0.8 + (i / pulseCount)) % 3; // 3 segments
+          const t = (elapsed * speed + (i / pulseCount) * segCount) % segCount;
           const segIdx = Math.floor(t);
           const segFraction = t - segIdx;
 
-          const srcId = gateChainNodes[segIdx];
-          const dstId = gateChainNodes[segIdx + 1];
+          const srcId = pathSequence[segIdx % pathSequence.length];
+          const dstId = pathSequence[(segIdx + 1) % pathSequence.length];
           const srcNode = nodes.find(n => n.id === srcId);
           const dstNode = nodes.find(n => n.id === dstId);
 
@@ -255,13 +272,30 @@ export const OrbitControlPlane: React.FC<OrbitControlPlaneProps> = ({
         posAttr.needsUpdate = true;
       }
 
-      // Highlight selected node
+      // Highlight selected node and dim nodes outside active path
       meshesMap.forEach((mesh, id) => {
+        let isPartOfPath = true;
+        if (activePath === 'SIO_STRUCTURAL') {
+          isPartOfPath = ['node-sio', 'node-kernel-hbv', 'node-kernel-ec5', 'node-kernel-ec2', 'node-ssot'].includes(id);
+        } else if (activePath === 'ASO_SYSTEMS') {
+          isPartOfPath = ['node-aso', 'node-agent-data', 'node-agent-tickr', 'node-agent-radio'].includes(id);
+        } else if (activePath === 'GOV_DAA') {
+          isPartOfPath = ['node-daa', 'node-aegs', 'node-mcp-bridge'].includes(id);
+        } else if (activePath === 'OPEN_ECOSYSTEM') {
+          isPartOfPath = ['node-ssot', 'node-mcp-bridge', 'node-kernel-hbv'].includes(id);
+        }
+
+        const mat = mesh.material as THREE.MeshStandardMaterial;
         if (id === selectedNodeId) {
-          const s = 1.0 + Math.sin(elapsed * 4) * 0.12;
+          const s = 1.0 + Math.sin(elapsed * 5) * 0.16;
           mesh.scale.set(s, s, s);
+          mat.emissiveIntensity = 0.9;
+        } else if (!isPartOfPath) {
+          mesh.scale.set(0.85, 0.85, 0.85);
+          mat.emissiveIntensity = 0.1;
         } else {
           mesh.scale.set(1, 1, 1);
+          mat.emissiveIntensity = 0.4;
         }
       });
 
@@ -394,23 +428,57 @@ export const OrbitControlPlane: React.FC<OrbitControlPlaneProps> = ({
         onWheel={handleWheel}
       />
 
-      {/* Control HUD Overlay */}
-      <div className="absolute top-3 left-3 flex flex-wrap items-center gap-2 pointer-events-auto bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800 text-xs">
+      {/* Control HUD Overlay & Cluster-Specific Path Pills */}
+      <div className="absolute top-3 left-3 flex flex-wrap items-center gap-2 pointer-events-auto bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800 text-xs z-10">
         <span className="font-mono font-bold text-sky-400">3D-ORBIT // CONTROL PLANE</span>
         <span className="text-slate-600">|</span>
         <button
           onClick={() => setAutoRotate(!autoRotate)}
           className={`px-2 py-0.5 rounded transition ${autoRotate ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40' : 'bg-slate-800 text-slate-400'}`}
         >
-          {autoRotate ? 'AUTO-ORBIT: ON' : 'AUTO-ORBIT: OFF'}
+          {autoRotate ? 'ORBIT: AUTO' : 'ORBIT: MANUAL'}
         </button>
         <button
           onClick={resetView}
           className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
         >
-          RESET VIEW
+          RESET
         </button>
-        <span className="text-slate-500 font-mono text-[10px]">R: {cameraDistance}m</span>
+        <span className="text-slate-600">|</span>
+        
+        {/* 4 Cluster Paths Pills */}
+        <div className="flex items-center gap-1 text-[10px] font-mono">
+          <button
+            onClick={() => setActivePath('ALL')}
+            className={`px-1.5 py-0.5 rounded transition ${activePath === 'ALL' ? 'bg-slate-700 text-white font-bold' : 'text-slate-400 hover:text-slate-200'}`}
+          >
+            ALLE PFADE
+          </button>
+          <button
+            onClick={() => setActivePath('SIO_STRUCTURAL')}
+            className={`px-1.5 py-0.5 rounded transition ${activePath === 'SIO_STRUCTURAL' ? 'bg-rose-950 text-rose-300 border border-rose-700 font-bold' : 'text-slate-400 hover:text-rose-300'}`}
+          >
+            🔴 ROT (SIO STATIK)
+          </button>
+          <button
+            onClick={() => setActivePath('ASO_SYSTEMS')}
+            className={`px-1.5 py-0.5 rounded transition ${activePath === 'ASO_SYSTEMS' ? 'bg-sky-950 text-sky-300 border border-sky-700 font-bold' : 'text-slate-400 hover:text-sky-300'}`}
+          >
+            🔵 BLAU (ASO AGENTS)
+          </button>
+          <button
+            onClick={() => setActivePath('GOV_DAA')}
+            className={`px-1.5 py-0.5 rounded transition ${activePath === 'GOV_DAA' ? 'bg-emerald-950 text-emerald-300 border border-emerald-700 font-bold' : 'text-slate-400 hover:text-emerald-300'}`}
+          >
+            🟢 GRÜN (GOV/DAA)
+          </button>
+          <button
+            onClick={() => setActivePath('OPEN_ECOSYSTEM')}
+            className={`px-1.5 py-0.5 rounded transition ${activePath === 'OPEN_ECOSYSTEM' ? 'bg-purple-950 text-purple-300 border border-purple-700 font-bold' : 'text-slate-400 hover:text-purple-300'}`}
+          >
+            🟣 VIOLETT (ECOSYSTEM)
+          </button>
+        </div>
       </div>
 
       {/* Active Gate & Status Banner */}
