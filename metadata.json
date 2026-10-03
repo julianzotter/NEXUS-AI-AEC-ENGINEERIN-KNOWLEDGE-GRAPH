@@ -1,0 +1,6 @@
+{
+  "name": "NEXUS-4 | Deterministic AI-AEC Structural Engineering OS",
+  "description": "Deterministic AI-AEC Knowledge Structural Engineering OS for Eurocode design (EC2, EC5, CEN/TS 19103) with 4-Layer Governance, deterministic calculation kernels, and agent orchestration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
