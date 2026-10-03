@@ -5,14 +5,16 @@
 
 import React, { useState } from 'react';
 import { SSOT_DATABASE, MATERIAL_CATALOG, KnowledgeObject } from '../../knowledge/ssotKnowledgeBase';
-import { BookOpen, Search, ShieldCheck, CheckCircle2, FileText, Layers, ExternalLink } from 'lucide-react';
+import { mcpBridge } from '../../services/mcpBridge';
+import { BookOpen, Search, ShieldCheck, CheckCircle2, FileText, Layers, ExternalLink, Github } from 'lucide-react';
 
 export const KnowledgeGraphView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
-  const [activeObject, setActiveObject] = useState<KnowledgeObject | null>(SSOT_DATABASE[0]);
+  const allKnowledge = mcpBridge.getAllKnowledge();
+  const [activeObject, setActiveObject] = useState<KnowledgeObject | null>(allKnowledge[0] || SSOT_DATABASE[0]);
 
-  const filtered = SSOT_DATABASE.filter(item => {
+  const filtered = allKnowledge.filter(item => {
     const matchesType = selectedType === 'ALL' || item.type === selectedType;
     const matchesQuery = 
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -81,7 +83,14 @@ export const KnowledgeGraphView: React.FC = () => {
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-slate-200">{obj.code}</span>
+                <div className="flex items-center gap-1.5 truncate">
+                  <span className="font-bold text-slate-200">{obj.code}</span>
+                  {obj.authority.startsWith('GitHub') && (
+                    <span className="text-[9px] bg-purple-950 text-purple-300 border border-purple-800 px-1 py-0.2 rounded flex items-center gap-0.5 shrink-0">
+                      <Github className="w-2.5 h-2.5" /> GITHUB
+                    </span>
+                  )}
+                </div>
                 <span className="text-[10px] text-purple-400 bg-slate-900 px-1.5 py-0.5 rounded">
                   {obj.type}
                 </span>

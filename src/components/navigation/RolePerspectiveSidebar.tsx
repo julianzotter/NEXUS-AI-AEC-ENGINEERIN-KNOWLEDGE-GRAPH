@@ -16,7 +16,8 @@ import {
   Calculator, 
   BookOpen, 
   Share2,
-  HardDrive
+  HardDrive,
+  Box
 } from 'lucide-react';
 
 export type ActivePerspective = 
@@ -32,7 +33,9 @@ export type ActivePerspective =
   | 'KERNEL_EC2'
   | 'KNOWLEDGE_SSOT'
   | 'MCP_BRIDGE'
-  | 'ORBIT_3D';
+  | 'ORBIT_3D'
+  | 'STRUCTURAL_3D'
+  | 'CONNECTORS_HUB';
 
 interface RolePerspectiveSidebarProps {
   currentPerspective: ActivePerspective;
@@ -159,6 +162,35 @@ export const RolePerspectiveSidebar: React.FC<RolePerspectiveSidebarProps> = ({
               </button>
             );
           })}
+        </div>
+
+        {/* 4. BIM, CAD, Tasks & Visualizer */}
+        <div className="space-y-1">
+          <div className="text-[10px] text-slate-500 uppercase tracking-wider px-2 font-bold">
+            BIM, CAD & Connectors
+          </div>
+          <button
+            onClick={() => onSelectPerspective('STRUCTURAL_3D')}
+            className={`w-full py-1.5 px-2.5 rounded-lg text-left transition flex items-center gap-2 ${
+              currentPerspective === 'STRUCTURAL_3D'
+                ? 'bg-slate-800 text-slate-100 font-bold border border-slate-700'
+                : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+            }`}
+          >
+            <Box className="w-3.5 h-3.5 text-sky-400" />
+            <span className="truncate">3D OpenGL Visualizer</span>
+          </button>
+          <button
+            onClick={() => onSelectPerspective('CONNECTORS_HUB')}
+            className={`w-full py-1.5 px-2.5 rounded-lg text-left transition flex items-center gap-2 ${
+              currentPerspective === 'CONNECTORS_HUB'
+                ? 'bg-slate-800 text-slate-100 font-bold border border-slate-700'
+                : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+            }`}
+          >
+            <HardDrive className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="truncate">BIM/CAD & Tasks Hub</span>
+          </button>
         </div>
       </div>
 

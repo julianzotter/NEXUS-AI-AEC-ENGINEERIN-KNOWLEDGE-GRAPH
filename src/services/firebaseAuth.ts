@@ -19,9 +19,11 @@ const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const provider = new GoogleAuthProvider();
-// Workspace Drive scopes as configured during setup
+// Workspace Drive and Tasks scopes as configured during setup
 provider.addScope('https://www.googleapis.com/auth/drive.file');
 provider.addScope('https://www.googleapis.com/auth/drive.readonly');
+provider.addScope('https://www.googleapis.com/auth/tasks');
+provider.addScope('https://www.googleapis.com/auth/tasks.readonly');
 
 let isSigningIn = false;
 let cachedAccessToken: string | null = null;

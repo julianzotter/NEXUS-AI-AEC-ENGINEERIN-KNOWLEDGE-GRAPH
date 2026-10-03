@@ -23,6 +23,7 @@ interface TopNavBarProps {
   onOpenVoiceModal: () => void;
   onOpenSearchModal: () => void;
   onTriggerGoldenRun: () => void;
+  onSelectPerspective?: (perspective: any) => void;
   systemOperational: boolean;
   driftLevel: number;
 }
@@ -34,6 +35,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   onOpenVoiceModal,
   onOpenSearchModal,
   onTriggerGoldenRun,
+  onSelectPerspective,
   systemOperational,
   driftLevel
 }) => {
@@ -68,8 +70,27 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-sky-600/20"
         >
           <Play className="w-3.5 h-3.5 fill-current" />
-          RUN GOLDEN SLICE (HBV)
+          RUN GOLDEN SLICE
         </button>
+
+        {onSelectPerspective && (
+          <>
+            <button
+              onClick={() => onSelectPerspective('CONNECTORS_HUB')}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-mono text-xs transition flex items-center gap-1.5"
+            >
+              <HardDrive className="w-3.5 h-3.5 text-emerald-400" />
+              CAD & TASKS
+            </button>
+            <button
+              onClick={() => onSelectPerspective('STRUCTURAL_3D')}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-mono text-xs transition flex items-center gap-1.5"
+            >
+              <Layers className="w-3.5 h-3.5 text-sky-400" />
+              3D VISUALIZER
+            </button>
+          </>
+        )}
 
         <button
           onClick={onOpenSearchModal}

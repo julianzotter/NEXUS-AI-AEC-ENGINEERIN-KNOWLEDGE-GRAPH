@@ -13,14 +13,15 @@ export interface DriveFileItem {
   size?: string;
 }
 
-export async function listDriveFiles(): Promise<DriveFileItem[]> {
+export async function listDriveFiles(customQuery?: string): Promise<DriveFileItem[]> {
   const token = await getAccessToken();
   if (!token) {
     throw new Error('Not authenticated with Google Drive. Please sign in first.');
   }
 
+  const q = customQuery ? encodeURIComponent(customQuery) : 'trashed%20%3D%20false';
   const res = await fetch(
-    'https://www.googleapis.com/drive/v3/files?pageSize=25&fields=files(id,name,mimeType,modifiedTime,size)&q=trashed%20%3D%20false',
+    `https://www.googleapis.com/drive/v3/files?pageSize=50&fields=files(id,name,mimeType,modifiedTime,size)&q=${q}`,
     {
       headers: {
         Authorization: `Bearer ${token}`
@@ -35,6 +36,26 @@ export async function listDriveFiles(): Promise<DriveFileItem[]> {
 
   const data = await res.json();
   return data.files || [];
+}
+
+export async function fetchDriveFileContent(fileId: string): Promise<string> {
+  const token = await getAccessToken();
+  if (!token) {
+    throw new Error('Not authenticated with Google Drive');
+  }
+
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `Failed to fetch file content: ${res.statusText}`);
+  }
+
+  return await res.text();
 }
 
 export async function uploadAuditBundleToDrive(fileName: string, jsonPayload: object): Promise<{ id: string; name: string }> {

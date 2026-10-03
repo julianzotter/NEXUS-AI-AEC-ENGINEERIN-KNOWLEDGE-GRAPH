@@ -32,6 +32,8 @@ import { McpBridgeView } from './components/mcp/McpBridgeView';
 import { VoiceModal } from './components/modals/VoiceModal';
 import { SearchModal } from './components/modals/SearchModal';
 import { DeltaModal } from './components/modals/DeltaModal';
+import { Structural3DVisualizer } from './components/visualization/Structural3DVisualizer';
+import { ConnectorsWorkspace } from './components/connectors/ConnectorsWorkspace';
 
 export default function App() {
   // Navigation & Perspective
@@ -45,6 +47,10 @@ export default function App() {
   // Auth (Google Drive / Firebase)
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isDriveAuthenticated, setIsDriveAuthenticated] = useState<boolean>(false);
+
+  // Structural Parameters & Result
+  const [hbvParams, setHbvParams] = useState<HbvParameters>(GOLDEN_HBV_PARAMETERS);
+  const currentHbvResult = calculateHbvGamma(hbvParams);
 
   // Governance Runs & Veto State
   const [currentRun, setCurrentRun] = useState<RunEnvelope | null>(null);
@@ -314,7 +320,8 @@ export default function App() {
         onSignOut={handleSignOut}
         onOpenVoiceModal={() => setIsVoiceModalOpen(true)}
         onOpenSearchModal={() => setIsSearchModalOpen(true)}
-        onTriggerGoldenRun={() => executeGoldenRun(GOLDEN_HBV_PARAMETERS)}
+        onTriggerGoldenRun={() => executeGoldenRun(hbvParams)}
+        onSelectPerspective={setCurrentPerspective}
         systemOperational={driftLevel <= 2.0}
         driftLevel={driftLevel}
       />
@@ -404,6 +411,30 @@ export default function App() {
           {/* View Mode: Local MCP Bridge */}
           {currentPerspective === 'MCP_BRIDGE' && (
             <McpBridgeView />
+          )}
+
+          {/* View Mode: 3D OpenGL Structural Visualizer */}
+          {currentPerspective === 'STRUCTURAL_3D' && (
+            <div className="space-y-4">
+              <Structural3DVisualizer
+                params={hbvParams}
+                result={currentHbvResult}
+              />
+              <HbvCalculatorSlice
+                initialParameters={hbvParams}
+                onExecuteGoldenRun={executeGoldenRun}
+              />
+            </div>
+          )}
+
+          {/* View Mode: BIM, CAD & Connectors Hub (DXF, OpenIFC, Google Tasks, GitHub) */}
+          {currentPerspective === 'CONNECTORS_HUB' && (
+            <ConnectorsWorkspace
+              params={hbvParams}
+              result={currentHbvResult}
+              isGoogleAuthenticated={isDriveAuthenticated}
+              onAuthenticateGoogle={handleGoogleSignIn}
+            />
           )}
         </main>
 

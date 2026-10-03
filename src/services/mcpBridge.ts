@@ -236,6 +236,14 @@ export class McpBridge {
       hash: fingerprint
     };
   }
+
+  public getRegisteredKnowledge(): KnowledgeObject[] {
+    return this.customKnowledge;
+  }
+
+  public getAllKnowledge(): KnowledgeObject[] {
+    return [...SSOT_DATABASE, ...this.customKnowledge];
+  }
 }
 
 export const mcpBridge = new McpBridge();
